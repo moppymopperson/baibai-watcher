@@ -4,7 +4,8 @@ import {
   VictoryArea,
   VictoryGroup,
   VictoryZoomContainer,
-  VictoryScatter
+  VictoryScatter,
+  VictoryTooltip
 } from 'victory'
 import Websocket from 'react-websocket'
 
@@ -13,7 +14,8 @@ export default class Plot extends Component {
     super(props)
     this.domain = this.domain.bind(this)
     this.state = {
-      data: []
+      prices: [],
+      trades: []
     }
   }
 
@@ -28,35 +30,70 @@ export default class Plot extends Component {
       >
         <VictoryGroup>
           <VictoryArea
-            style={{ data: { fill: '#c43a31' } }}
-            data={this.state.data}
+            style={{ data: { fill: '#9b59b6' } }}
+            data={this.state.prices}
           />
+          {this.scatterPlot()}
           <Websocket
             url="ws://127.0.0.1:8080"
-            onMessage={data => {
-              const json = JSON.parse(data)
-              const samples = json.map(x => ({
-                x: new Date(x.date),
-                y: x.price
-              }))
-              this.setState(prevState => ({
-                data: [...samples, ...prevState.data]
-              }))
-            }}
+            onMessage={data => this.handleData(data)}
           />
         </VictoryGroup>
       </VictoryChart>
     )
   }
 
+  scatterPlot() {
+    if (this.state.trades.length === 0) {
+      return null
+    }
+    return (
+      <VictoryScatter
+        style={{
+          data: { fill: d => (d.type === 'buy' ? '#1abc9c' : '#e74c3c') }
+        }}
+        labelComponent={<VictoryTooltip />}
+        data={this.state.trades}
+      />
+    )
+  }
+
   domain() {
-    if (this.state.data.length < 2) {
+    if (this.state.prices.length < 2) {
       return { x: [0, 100], y: [0, 100] }
     } else {
-      const prices = this.state.data.map(data => data.y)
+      const prices = this.state.prices.map(price => price.y)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
       return { y: [minPrice, maxPrice] }
+    }
+  }
+
+  handleData(data) {
+    console.log('received new data' + data)
+    const json = JSON.parse(data)
+    if (json.prices) {
+      const samples = json.prices.map(x => ({
+        x: new Date(x.date),
+        y: x.price
+      }))
+      this.setState(prevState => ({
+        prices: [...samples, ...prevState.prices]
+      }))
+    }
+
+    if (json.trades) {
+      const samples = json.trades.map(trade => ({
+        x: new Date(trade.date),
+        y: trade.price,
+        symbol: trade.type === 'buy' ? 'triangleUp' : 'triangleDown',
+        size: 7,
+        type: trade.type,
+        label: `${trade.shares} shares @ ${trade.price}`
+      }))
+      this.setState(prevState => ({
+        trades: [...samples, ...prevState.trades]
+      }))
     }
   }
 }
