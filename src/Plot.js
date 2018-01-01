@@ -35,7 +35,7 @@ export default class Plot extends Component {
           />
           {this.scatterPlot()}
           <Websocket
-            url="ws://127.0.0.1:8080"
+            url="ws://localhost:8080"
             onMessage={data => this.handleData(data)}
           />
         </VictoryGroup>
