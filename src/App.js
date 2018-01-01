@@ -16,7 +16,6 @@ class App extends Component {
   }
 
   updateDimensions() {
-    this.setState({ width: window.innerWidth, height: window.innerHeight })
     console.log(this.state)
   }
 
