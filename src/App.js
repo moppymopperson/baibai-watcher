@@ -3,27 +3,11 @@ import Plot from './Plot'
 import './App.css'
 
 class App extends Component {
-  componentWillMount() {
-    this.updateDimensions()
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.updateDimensions.bind(this))
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateDimensions.bind(this))
-  }
-
-  updateDimensions() {
-    console.log(this.state)
-  }
-
   render() {
     return (
       <div className="App">
         <div className="Container">
-          <Plot width={this.state.width} height={this.state.height} />
+          <Plot />
         </div>
       </div>
     )
