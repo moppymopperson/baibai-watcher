@@ -23,9 +23,11 @@ export default class Plot extends Component {
     return (
       <VictoryChart
         className="Plot"
+        height={this.props.height}
+        width={this.props.width}
         domain={this.domain()}
         domainPadding={{ top: 0, left: 0, bottom: 0, right: 0 }}
-        padding={{ top: 10, left: 30, bottom: 0, right: 0 }}
+        padding={{ top: 10, left: 45, bottom: 0, right: 10 }}
         containerComponent={<VictoryZoomContainer zoomDimension="x" />}
       >
         <VictoryGroup>
