@@ -89,7 +89,7 @@ export default class Plot extends Component {
         x: new Date(trade.date),
         y: trade.price,
         symbol: trade.type === 'buy' ? 'triangleUp' : 'triangleDown',
-        size: 7,
+        size: 20,
         type: trade.type,
         label: `${trade.shares} shares @ ${trade.price}`
       }))
